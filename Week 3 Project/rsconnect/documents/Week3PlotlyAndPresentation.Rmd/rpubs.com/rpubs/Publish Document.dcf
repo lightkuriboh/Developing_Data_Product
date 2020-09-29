@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/667901/315a55b501f44d88a6bb3f8bc5133b1f
+bundleId: https://api.rpubs.com/api/v1/document/667901/315a55b501f44d88a6bb3f8bc5133b1f
+url: http://rpubs.com/lightkuriboh/667901
+when: 1601372559.15093

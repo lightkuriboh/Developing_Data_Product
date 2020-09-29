@@ -1,0 +1,23 @@
+---
+title: "Week3"
+author: "kuriboh"
+date: "9/29/2020"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r, message=FALSE}
+library(plotly)
+```
+# My presentation  
+**This is my presentation**  
+  
+## Date  
+**September 21, 2019**
+  
+## Generate plot  
+```{r, message=FALSE}
+plotly::plot_ly(mtcars, x=mtcars$wt, y=mtcars$mpg, z=seq(1, length(mtcars$wt)), mode="markers", color=mtcars$am, type='scatter3d')
+```

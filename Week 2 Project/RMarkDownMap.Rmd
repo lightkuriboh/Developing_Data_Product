@@ -1,0 +1,31 @@
+---
+title: "RMarkDownMap"
+author: "kuriboh"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+  
+## Date  
+**September 21, 2019**
+  
+## Map at my location  
+```{r, echo=FALSE}
+library(leaflet)
+hieuIcon <- makeIcon(
+    iconUrl='https://qph.fs.quoracdn.net/main-qimg-881fd32b529a7d797082763bc9a08a24.webp',
+    iconWidth=31*215/230,
+    iconHeight=31,
+    iconAnchorX=31*215/230/2,
+    iconAnchorY=16
+)
+my_map <- leaflet::leaflet() %>%
+    leaflet::addTiles() %>%
+    leaflet::addMarkers(lat=10.444598,
+                        lng=105.828235,
+                        popup='HieuOffice',
+                        icon=hieuIcon)
+my_map
+```
