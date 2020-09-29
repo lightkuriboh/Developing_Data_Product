@@ -1,30 +1,83 @@
 ---
-title: "PitchingSlide"
+title: "Shiny Pitching Slide"
 author: "kuriboh"
 date: "9/29/2020"
-output: html_document
+output: slidy_presentation
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Idea  
+I want to simulate the central limit theorem.  
+With the inputs required are: population mean, population standard deviation, the users can see the effects of the number of simulations and the sample size on the distribution of the sample mean.  
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+## Formula to generate the sample means  
+```{r}
+nsim = 10
+nsam = 4
+pop_mean = 0
+pop_sd = 1
+matrix_data <- matrix(rnorm(nsim * nsam, mean=pop_mean, sd=pop_sd), nrow=nsim, ncol=nsam)
+sample_means <- apply(matrix_data, 1, mean)
+matrix_data
+sample_means
 ```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+  
+## UI  
+#### The left part contains the presented plots, as well as the instructions to use the application. They are separated in different tab panels    
 ```
+mainPanel(
+    h3('Central Limit Theorem Visualization'),
+    tabsetPanel(type='tabs',
+                tabPanel('Column plot', br(), plotOutput('output_column')),
+                tabPanel('Line plot', br(), plotOutput('output_line')),
+                tabPanel('Instruction', br(), div('Instruction: Use the sliders to modify parameters, which are use to randomly generate sample mean, which centers at the population means. You can see the effects of the number of simulations, as well as the size of sample on the theorem. With this, you can easily see what the Central Limit Theorem is.'))
+    )
+)
+```
+  
+#### The right part contains the input sliders  
+```
+sidebarPanel(
+    h3('Simulation parameters'),
+    sliderInput('nsim_slider', 'How many simulations?', 100, 10000, 100),
+    sliderInput('nsam_slider', 'How samples to simulate?', 10, 100, 10),
+    sliderInput('mean_slider', 'What is the population mean?', 0, 1000, 0),
+    sliderInput('sd_slider', 'What is the population standard deviation?', 1, 100, 1)
+)
+```
+  
+## Server  
+#### A reactive function to generate the data and calculate its sample means whenever the inputs change  
+```
+create_random_data <- reactive({
+    nsim <- input$nsim_slider
+    nsam <- input$nsam_slider
+    pop_mean <- input$mean_slider
+    pop_sd <- input$sd_slider
+    matrix_data <- matrix(rnorm(nsim * nsam, mean=pop_mean, sd=pop_sd), nrow=nsim, ncol=nsam)
+    sample_means <- apply(matrix_data, 1, mean)
+    data.frame(PMF=sample_means)
+})
+```
+  
+#### Code to present plots into the UI  
+```
+output$output_column <- renderPlot({
+    my_data <- create_random_data()
+    ggplot(my_data, aes(x=PMF)) + geom_histogram(fill='lightblue', bins=100, aes(y=..density..)) +
+        geom_vline(xintercept=input$mean_slider, color='red') +
+        stat_function(fun=dnorm, args=list(mean=mean(my_data$PMF), sd=sd(my_data$PMF)), color='yellow')
+})
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+output$output_line <- renderPlot({
+    my_data <- create_random_data()
+    ggplot(my_data, aes(x=PMF)) + geom_density(adjust=0.1, color='orange') +
+        geom_vline(xintercept=input$mean_slider, color='red') +
+        stat_function(fun=dnorm, args=list(mean=mean(my_data$PMF), sd=sd(my_data$PMF)), color='green')
+})
+```
+  
+#### 

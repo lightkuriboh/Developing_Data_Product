@@ -1,0 +1,12 @@
+name: Central-Limit-Theorem-Visualization
+title: Central-Limit-Theorem-Visualization
+username:
+account: lightkuriboh
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2909674
+bundleId: 3683271
+url: https://lightkuriboh.shinyapps.io/Central-Limit-Theorem-Visualization/
+when: 1601387217.97854
+asMultiple: FALSE
+asStatic: FALSE
