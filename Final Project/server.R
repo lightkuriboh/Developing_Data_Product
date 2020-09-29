@@ -3,22 +3,25 @@ library(shiny)
 library(ggplot2)
 
 shinyServer(function(input, output) {
-    my_points <- data.frame(X=runif(0, 0, 100), Y=runif(0, 0, 100))
-    
-    our_data <- reactive({
-        brushed_data <- brushedPoints(my_points, input$my_brush, xvar='X', yvar='Y')
-        brushed_data
+    create_random_data <- reactive({
+        nsim <- input$nsim_slider
+        nsam <- input$nsam_slider
+        pop_mean <- input$mean_slider
+        pop_sd <- input$sd_slider
+        matrix_data <- matrix(rnorm(nsim * nsam, mean=pop_mean, sd=pop_sd), nrow=nsim, ncol=nsam)
+        sample_means <- apply(matrix_data, 1, mean)
+        data.frame(PMF=sample_means)
     })
-    
-    output$my_plot <- renderPlot({
-        n <- input$my_slider^2
-        cut_points <- our_data()
-        print(cut_points)
-        if (nrow(cut_points) == 0) {
-            my_points <<- data.frame(X=runif(n, 0, 100), Y=runif(n, 0, 100))
-        } else {
-            my_points <<- cut_points
-        }
-        ggplot(my_points, aes(x=X, y=Y)) + geom_point()
+    output$output_column <- renderPlot({
+        my_data <- create_random_data()
+        ggplot(my_data, aes(x=PMF)) + geom_histogram(fill='lightblue', bins=100, aes(y=..density..)) +
+            geom_vline(xintercept=input$mean_slider, color='red') +
+            stat_function(fun=dnorm, args=list(mean=mean(my_data$PMF), sd=sd(my_data$PMF)), color='yellow')
+    })
+    output$output_line <- renderPlot({
+        my_data <- create_random_data()
+        ggplot(my_data, aes(x=PMF)) + geom_density(adjust=0.1, color='orange') +
+            geom_vline(xintercept=input$mean_slider, color='red') +
+            stat_function(fun=dnorm, args=list(mean=mean(my_data$PMF), sd=sd(my_data$PMF)), color='green')
     })
 })
